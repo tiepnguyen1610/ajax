@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Employee;
 
 class EmployeeController extends Controller
 {
@@ -13,7 +14,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return view('list');
+        $employees= Employee::orderBy('id','desc')->paginate(5);
+        return view('index',compact('employees'));
     }
 
     /**
@@ -34,7 +36,11 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $employee = Employee::create($request->all());
+        return response()->json([
+            'data'=>$employee,
+            'message'=>'Thêm mới thành công'
+        ],200);// 200 là mã lỗi
     }
 
     /**
@@ -56,7 +62,8 @@ class EmployeeController extends Controller
      */
     public function edit($id)
     {
-        //
+        $employee = Employee::find($id);
+        return view('edit',compact('employee'));
     }
 
     /**
@@ -68,7 +75,11 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $employee = Employee::find($id)->update($request->all());
+        return response()->json([
+            'data'=>$employee,
+            'message'=>'Cập nhật dữ liệu thành công'
+        ],200);
     }
 
     /**
@@ -79,6 +90,7 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Employee::find($id)->delete();
+        return response()->json(['data'=>'removed','message'=>'Xoá thành công'],200);
     }
 }
